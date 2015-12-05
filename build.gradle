@@ -1,0 +1,41 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+def javaHome = System.properties['java.home']
+def mainClassName = 'com.shootoff.diagnostic.Main'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Raven, exception reporting client (requires logback)
+    compile group: 'net.kencochrane.raven', name: 'raven-logback', version: '6.+'
+
+    // Logback to enable exception reporting
+    compile group: 'ch.qos.logback', name: 'logback-core', version: '1.+'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.+'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+        attributes 'Application-Name': 'ShootOFF-Diagnostics'
+        attributes 'Created-By': 'ShootOFF'
+    }
+
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+        configurations.runtime.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
