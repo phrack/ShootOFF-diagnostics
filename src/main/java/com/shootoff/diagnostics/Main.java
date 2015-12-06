@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class Main {
 	private static final Logger logger = LoggerFactory.getLogger(Main.class);
 	private static final long BYTES_IN_MEGABYTE = 1048576;
-	private static final long SHOOTOFF_PROCESS_TIMEOUT = 100; // ms
+	private static final long SHOOTOFF_PROCESS_TIMEOUT = 15000; // ms
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
 		String runtimeName = System.getProperty("java.runtime.name");
@@ -60,15 +60,22 @@ public class Main {
 		BufferedReader stdErrorReader = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
 
 		StringBuilder stdOut = new StringBuilder();
-		String s = null;
-		while ((s = stdInputReader.readLine()) != null) {
-		    stdOut.append(s + "\n"); 
-		}
-
 		StringBuilder stdErr = new StringBuilder();
-		while ((s = stdErrorReader.readLine()) != null) {
-			stdErr.append(s + "\n");
-		}
+		
+		new Thread(() -> {
+			try {
+				String s = null;
+				while ((s = stdInputReader.readLine()) != null) {
+				    stdOut.append(s + "\n"); 
+				}
+				
+				while ((s = stdErrorReader.readLine()) != null) {
+					stdErr.append(s + "\n");
+				}
+			}catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+		}).start();
 		
 		Worker worker = new Worker(proc);
 		worker.start();

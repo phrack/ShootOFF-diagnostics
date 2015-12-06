@@ -8,7 +8,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 
 def javaHome = System.properties['java.home']
-def mainClassName = 'com.shootoff.diagnostic.Main'
+def mainClassName = 'com.shootoff.diagnostics.Main'
 
 repositories {
     mavenCentral()
