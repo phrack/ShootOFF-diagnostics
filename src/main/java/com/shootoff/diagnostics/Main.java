@@ -25,12 +25,35 @@ import java.io.InputStreamReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import oshi.SystemInfo;
+
 public class Main {
 	private static final Logger logger = LoggerFactory.getLogger(Main.class);
 	private static final long BYTES_IN_MEGABYTE = 1048576;
 	private static final long SHOOTOFF_PROCESS_TIMEOUT = 15000; // ms
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
+		SystemInfo si = new SystemInfo();
+		
+		StringBuilder cpuLoadPerProcessor = new StringBuilder("CPU Load Per Processor:");
+		
+		for (double load : si.getHardware().getProcessor().getProcessorCpuLoadBetweenTicks()) {
+			cpuLoadPerProcessor.append(" ");
+			cpuLoadPerProcessor.append(String.format("%.02f", load * 100));
+			cpuLoadPerProcessor.append("%");
+		}
+		
+		String cpuData = String.format("%s%n is64bit = %b%n physical cpu(s): %d%n logical cpu(s): %d%n%s", 
+				si.getHardware().getProcessor().getName(),
+				si.getHardware().getProcessor().isCpu64bit(),
+				si.getHardware().getProcessor().getPhysicalProcessorCount(),
+				si.getHardware().getProcessor().getLogicalProcessorCount(),
+				cpuLoadPerProcessor);
+		
+		String ramData = String.format("Total RAM Installed: %d MB%nAvailable RAM: %d MB", 
+				si.getHardware().getMemory().getTotal() / BYTES_IN_MEGABYTE,
+				si.getHardware().getMemory().getAvailable() / BYTES_IN_MEGABYTE);
+		
 		String runtimeName = System.getProperty("java.runtime.name");
 		String runtimeVersion = System.getProperty("java.runtime.version");
 		String jvmBitness = System.getProperty("sun.arch.data.model");
@@ -47,8 +70,8 @@ public class Main {
 		long maxMemory = Runtime.getRuntime().maxMemory() / BYTES_IN_MEGABYTE;
 		String memoryAvailableToJVM = String.format("Max amount of memory JVM will use = %d MB", maxMemory);
 		
-		String diagnosticData = String.format("%s%n%s%n%s%n%n%s", runtimeData, osData, 
-				memoryAvailableToJVM, getShootOFFOutput());
+		String diagnosticData = String.format("%s%n%s%n%s%n%s%n%s%n%s%n", runtimeData, osData, 
+				memoryAvailableToJVM, cpuData, ramData, getShootOFFOutput());
 		
 		logger.error(diagnosticData);
 	}

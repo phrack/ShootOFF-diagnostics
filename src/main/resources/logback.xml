@@ -16,7 +16,7 @@
 
   <appender name="Sentry" class="net.kencochrane.raven.logback.SentryAppender">
     <dsn>http://e125530c2ca249bd956343ca2ad09dd4:c34458865bef486195a6b0341e95e3de@dev.shootoffapp.com:9000/1</dsn>
-    <tags>shootoff-diagnostic-tool:1.0</tags>
+    <tags>shootoff-diagnostic-tool:1.1</tags>
   </appender>
 
   <root level="warn">

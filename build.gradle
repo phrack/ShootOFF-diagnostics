@@ -15,6 +15,9 @@ repositories {
 }
 
 dependencies {
+    // OSHI to collect HW and system state data
+    compile group: 'com.github.dblock', name: 'oshi-core', version: '2.+'
+
     // Raven, exception reporting client (requires logback)
     compile group: 'net.kencochrane.raven', name: 'raven-logback', version: '6.+'
 
